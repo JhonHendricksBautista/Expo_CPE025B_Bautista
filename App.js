@@ -1,56 +1,34 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { StyleSheet, Text, View, Button, TextInput, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
+import GoalItem from './components/GoalItem';
+import GoalInput from './components/GoalInput';
 
 export default function App() {
-  const [enteredGoalText, setEnteredGoalText] = useState('');
   const [courseGoals, setCourseGoals] = useState([]);
 
-  function goalInputHandler(enteredText) {
-    setEnteredGoalText(enteredText);
-  }
-
-  function addGoalHandler() {
-    if (enteredGoalText.trim().length === 0) return; // preventing null inputs
-    setCourseGoals((currentCourseGoals) => [ // add goals
+  // function passed to GoalInput to add new goal
+  function addGoalHandler(enteredGoalText) {
+    setCourseGoals((currentCourseGoals) => [
       ...currentCourseGoals,
-      enteredGoalText
+      { text: enteredGoalText, key: Math.random().toString() }
     ]);
-    setEnteredGoalText(''); // resets the inputField once added
   }
 
   return (
     <View style={styles.appContainer}>
       <StatusBar style="light" />
-
-      {/* App Title */}
       <Text style={styles.appTitle}>My Goals App</Text>
 
-      <View style={styles.inputContainer}>
-        <TextInput 
-          style={styles.input}
-          placeholder="Your Course Goal"
-          placeholderTextColor="#bbb"
-          onChangeText={goalInputHandler}
-          value={enteredGoalText}
-        />
-        <View style={styles.buttonContainer}>
-          <Button title="Add" onPress={addGoalHandler} color="#1E90FF" />
-        </View>
-      </View>
+      <GoalInput onAddGoal={addGoalHandler} />
 
-      {/* tried to use scrollview to make the app interactive*/}
-      <ScrollView style={styles.goalsContainer}>
-        {courseGoals.length === 0 ? ( // checking if there are no goals
-          <Text style={styles.noGoals}>No goals added yet!</Text>
-        ) : (
-          courseGoals.map((goal, index) => ( // now uses an index 
-            <View key={index} style={styles.goalItem}>
-              <Text style={styles.goalText}>{goal}</Text>
-            </View>
-          ))
-        )}
-      </ScrollView>
+      <View style={styles.goalListContainer}>
+        <FlatList 
+          data={courseGoals} 
+          renderItem={(itemData) => <GoalItem text={itemData.item.text} />}
+          keyExtractor={(item) => item.key}
+        />
+      </View>
     </View>
   );
 }
@@ -62,7 +40,6 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingHorizontal: 16,
   },
-
   appTitle: {
     fontSize: 28,
     fontWeight: 'bold',
@@ -70,48 +47,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 24,
   },
-
-  inputContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-
-  input: {
-    backgroundColor: '#1E1E1E',
-    color: '#fff',
-    width: "70%", 
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#1E90FF',
-  },
-
-  buttonContainer: {
-    width: "25%", 
-  },
-
-  goalsContainer: {
+  goalListContainer: {
     flex: 1,
+    height: '40%',
+    maxHeight: 300,
   },
-
-  noGoals: {
-    color: '#aaa',
-    fontStyle: 'italic',
-    textAlign: 'center',
-    marginTop: 20,
-  },
-
-  goalItem: {
-    backgroundColor: '#1E90FF',
-    padding: 12,
-    borderRadius: 12,
-    marginVertical: 6,
-  },
-
-  goalText: {
-    color: '#fff',
-  }
 });
