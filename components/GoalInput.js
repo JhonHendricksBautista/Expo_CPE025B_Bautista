@@ -1,52 +1,74 @@
 import { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, Pressable, Text, StyleSheet } from 'react-native';
 
 function GoalInput(props) {
   const [enteredGoalText, setEnteredText] = useState('');
-  // local handler updates the local state
+
   function textInputHandler(enteredText) {
     setEnteredText(enteredText);
   }
-  // when button is pressed, call the prop function with local state
+
   function addGoalHandler() {
-    props.onAddGoal(enteredGoalText);  // send text to App.js
-    setEnteredText('');                 // reset input field
+    props.onAddGoal(enteredGoalText);
+    setEnteredText('');
   }
+
   return (
     <View style={styles.inputContainer}>
       <TextInput 
         placeholder="Your course goals!"
+        placeholderTextColor="#888"
         style={styles.input}
         onChangeText={textInputHandler}
-        value={enteredGoalText}         // controlled input
+        value={enteredGoalText}
       />
       <View style={styles.buttonContainer}>
-        <Button title="Add Goal" onPress={addGoalHandler} color="#1E90FF" />
+        <Pressable
+          onPress={addGoalHandler}
+          style={({ pressed }) => [
+            styles.pressableButton,
+            pressed && styles.pressedButton
+          ]}
+        >
+          <Text style={styles.buttonText}>Add Goal</Text>
+        </Pressable>
       </View>
     </View>
   );
 }
-
-export default GoalInput;
 
 const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 16,
   },
   input: {
-    backgroundColor: '#1E1E1E',
-    color: '#fff',
-    width: '70%',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 20,
+    flex: 1,
+    borderColor: '#ccc',
     borderWidth: 1,
-    borderColor: '#1E90FF',
+    padding: 8,
+    borderRadius: 5,
+    color: 'white'
   },
   buttonContainer: {
-    width: '25%',
+    marginLeft: 8,
+  },
+  pressableButton: {
+    backgroundColor: '#1E90FF',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  pressedButton: {
+    opacity: 0.7,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
+
+export default GoalInput;
